@@ -4,12 +4,12 @@
 export SHELL 		:= /bin/bash
 
 # env vars
-export NAME			:= "testvm"
-export IMAGE		:= "20.04"
+export NAME			:= testvm
+export IMAGE		:= 22.04
 export CPU			:= 2
 export DISK			:= 5G
 export MEM			:= 1G
-export CONF			:= "cloud-init.ubuntu.yml"
+export CONF			:= cloud-init.ubuntu.yml
 
 # colors
 GREEN  := $(shell tput -Txterm setaf 2)
@@ -33,7 +33,8 @@ launch: ## launch a new instance of ubuntu
 		--cpus "${CPU}" \
 		--disk "${DISK}" \
 		--memory "${MEM}" \
-		--cloud-init "${CONF}"
+		--cloud-init "${CONF}" \
+		--verbose
 
 list:
 	@echo "${YELLOW}Listing instances${RESET}"
@@ -46,6 +47,10 @@ info: ## show info about the instance
 shell: ## open a shell in the instance
 	@echo "${YELLOW}Opening a shell in the instance${RESET}"
 	multipass shell "${NAME}"
+
+mount: ## mount volume in instance
+	@echo "${YELLOW}Mounting the instance${RESET}"
+	multipass mount $(shell pwd) "${NAME}":/home/ubuntu/apt_lab_tf
 
 stop: ## stop the instance
 	@echo "${YELLOW}Stopping the instance${RESET}"
@@ -63,12 +68,15 @@ purge: ## purge all instances
 	@echo "${YELLOW}Purging all instances${RESET}"
 	multipass purge
 
-# TODO: complete `multipass exec` command
-ansible: start ## run ansible playbook
+run: ## run ansible playbook
 	@echo "${YELLOW}Running ansible playbook${RESET}"
 	#!/usr/bin/env bash
 	# set -euxo pipefail
-	# multipass exec "${NAME}"
+	multipass exec "${NAME}" -- \
+		ansible-playbook \
+			/home/ubuntu/apt_lab_tf/ansible/playbook.yml \
+			--tags qa \
+			-vvv
 
 precommit: ## update pre-commit hooks
 	@echo "${YELLOW}Updating pre-commit hooks${RESET}"
