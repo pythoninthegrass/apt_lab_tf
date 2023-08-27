@@ -42,11 +42,11 @@
         enabled: true
 
     - name: Add deadsnakes ppa
+      become: true
       ansible.builtin.apt_repository:
         repo: ppa:deadsnakes/ppa
         state: present
         update_cache: true
-      become: true
 
     - name: Install pip
       become: true
@@ -55,6 +55,7 @@
         state: present
 
     - name: Cross-platform dependencies
+      become: true
       ansible.builtin.package:
         name:
         - ansible
@@ -71,7 +72,6 @@
         - vim
         - wget
         state: present
-      become: true
 
     - name: Create default directories
       ansible.builtin.file:
@@ -90,11 +90,11 @@
 
   tasks:
     - name: Set /opt permissions
+      become: true
       ansible.builtin.file:
         path: /opt
         mode: '0777'
         state: directory
-      become: true
 
     - name: Download linuxtools.7z
       ansible.builtin.get_url:
@@ -103,7 +103,7 @@
 
     - name: Extract linuxtools.7z
       ansible.builtin.command: |
-        7z x -y /opt/linuxtools.7z
+        7z x -y /opt/linuxtools.7z -o/opt
 
     - name: Create tools directories
       ansible.builtin.file:
@@ -116,6 +116,7 @@
     - name: Move silenttrinity
       ansible.builtin.command: |
         mv /opt/st /opt/SilentTrinity/
+      async: 5
 
     - name: Move crackmapexec
       ansible.builtin.shell: |
@@ -144,9 +145,9 @@
         repo: https://github.com/Cyb3rWard0g/HELK.git
         dest: /opt/helk
 
-    # TODO: run on x86_64 vm
+    # TODO: run on x86_64 vm w/4cpu, 5gb ram, 20gb disk
     - name: Run helk docker container
+      become: true
       ansible.builtin.shell: |
         /opt/helk/docker/helk_install.sh -p hunting -i 10.10.98.20 -b 'helk-kibana-analysis-alert'
-      become: true
       tags: qa
