@@ -27,6 +27,7 @@ packages:
   - cloud-init
   - containerd.io
   - curl
+  - dnsutils
   - docker-ce
   - docker-ce-cli
   - git

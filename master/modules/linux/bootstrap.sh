@@ -25,7 +25,7 @@ trap trap_card EXIT SIGINT SIGTERM
 sudo apt update && sudo apt install -y software-properties-common
 sudo add-apt-repository -y ppa:deadsnakes/ppa
 sudo apt update && sudo apt install -y \
-	ansible ansible-lint curl git python3.11 python3.11-venv p7zip-full tree
+	ansible ansible-lint curl dnsutils git python3.11 python3.11-venv p7zip-full tree
 
 # set path for pip
 [[ -n $(logname >/dev/null 2>&1) ]] && logged_in_user=$(logname) || logged_in_user=$(whoami)

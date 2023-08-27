@@ -62,6 +62,7 @@
         - ansible-lint
         - ca-certificates
         - cloud-init
+        - dnsutils
         - git
         - inxi
         - p7zip-full
@@ -72,6 +73,7 @@
         - vim
         - wget
         state: present
+      # tags: qa
 
     - name: Create default directories
       ansible.builtin.file:
@@ -150,4 +152,4 @@
       become: true
       ansible.builtin.shell: |
         /opt/helk/docker/helk_install.sh -p hunting -i 10.10.98.20 -b 'helk-kibana-analysis-alert'
-      tags: qa
+      # tags: qa
