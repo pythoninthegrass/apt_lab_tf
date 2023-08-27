@@ -49,7 +49,7 @@ git clone https://github.com/lgandx/Responder.git /opt/Responder
 git clone https://github.com/SecureAuthCorp/impacket.git /opt/impacket
 python3.11 -m venv /opt/impacket/env
 
-# TODO: run on x86_64 vm w/5gb ram
+# TODO: run on x86_64 vm w/4cpu, 5gb ram, 20gb disk
 # clone and run helk container
 git clone https://github.com/Cyb3rWard0g/HELK.git /opt/helk
 sudo /opt/helk/docker/helk_install.sh -p hunting -i 10.10.98.20 -b 'helk-kibana-analysis-alert'
