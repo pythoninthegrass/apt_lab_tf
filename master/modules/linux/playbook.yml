@@ -61,11 +61,10 @@
     - name: Cross-platform dependencies
       ansible.builtin.package:
         name:
-        # - ansible
+        - ansible
         - ansible-lint
         - ca-certificates
         - cloud-init
-        - gh
         - git
         - inxi
         - p7zip-full
