@@ -52,27 +52,37 @@ def copy(src, dest):
             print('Directory not copied. Error: %s' % e)
 
 
-def readmastertf(masterfile):
-    fileaccess = open(masterfile, "r")
-    filecontent = fileaccess.read()
-    fileaccess.close()
-    return filecontent
+def read_master_tf(master_file):
+    file_access = open(master_file, "r")
+    file_content = file_access.read()
+    file_access.close()
+    return file_content
 
 
-def buildmain(mgmtip):
-    staticinfo = Path("static.tf").read_text()
-    buildinfo = Path("build.tf").read_text()
+def build_main(mgmt_ip):
+    static_info = Path("static.tf").read_text()
+    build_info = Path("build.tf").read_text()
 
-    maintf = open('./labs/main.tf', 'a+')
-    staticinfo = staticinfo.replace('subid', subscription_id)
-    staticinfo = staticinfo.replace('clid', client_id)
-    staticinfo = staticinfo.replace('clse', client_secret)
-    staticinfo = staticinfo.replace('tenid', tenant_id)
-    maintf.write(staticinfo)
-    tmp = buildinfo
-    tmp = tmp.replace('mgmtip', mgmtip[0])
-    tmp = tmp.replace('regionalregion',region)
-    maintf.write(tmp)
+    main_tf = open('./labs/main.tf', 'a+')
+    static_info = static_info.replace('subid', subscription_id)
+    static_info = static_info.replace('clid', client_id)
+    static_info = static_info.replace('clse', client_secret)
+    static_info = static_info.replace('tenid', tenant_id)
+    main_tf.write(static_info)
+    tmp = build_info
+    tmp = tmp.replace('mgmtip', mgmt_ip[0])
+    tmp = tmp.replace('regionalregion', region)
+    main_tf.write(tmp)
+
+
+def run_cmd(args):
+    """Run command, transfer stdout/stderr back into this process's stdout/stderr"""
+    print("Running command: %s" % " ".join(args))
+    p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    for line in iter(p.stdout.readline, b''):
+        print(line.decode('utf-8').rstrip())
+    p.stdout.close()
+    return p.wait()
 
 
 def main():
@@ -82,7 +92,7 @@ def main():
     parser.add_argument(
         '-m',
         help='Public IP Addresses for management access rules (ex. 1.1.1.1 or 1.1.1.0/24',
-        metavar='input_mgmt', dest='mgmtip', type=str, nargs='+', required=True
+        metavar='input_mgmt', dest='mgmt_ip', type=str, nargs='+', required=True
     )
     parser.add_argument(
         '-d', '-destroy',
@@ -93,15 +103,8 @@ def main():
     if args.destroy_switch:
         print("===This will use Terraform to DESTROY the Lab environment that was created in Azure======\nThis will 'un-build' the lab and all the data will be destroyed")
         time.sleep(3)
-        # os.system("cd labs && terraform destroy")
         cmd = ["cd", "labs", "&&", "terraform", "destroy"]
-        subprocess.run(
-            cmd,
-            shell=False,
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
+        run_cmd(cmd)
     else:
         # TODO: move to a global scope
         def split_args(arg):
@@ -117,29 +120,23 @@ def main():
             except TypeError:
                 return None
 
-    mgmtip = args.mgmtip
-    masterfolder = "./master"
-    classfolder = "./labs"
-    copy(masterfolder, classfolder)
-    buildmain(mgmtip)
-    # os.system("cd labs && terraform init")
+    mgmt_ip = args.mgmt_ip
+    master_dir = "./master"
+    class_dir = "./labs"
+    copy(master_dir, class_dir)
+    build_main(mgmt_ip)
+
+    # terraform init
     cmd = ["cd", "labs", "&&", "terraform", "init"]
-    subprocess.run(
-        cmd,
-        shell=False,
-        check=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
-    )
-    # os.system("cd labs && terraform apply -auto-approve")
+    run_cmd(cmd)
+
+    # terraform plan
+    cmd = ["cd", "labs", "&&", "terraform", "plan", "-out=tfplan"]
+    run_cmd(cmd)
+
+    # terraform apply
     cmd = ["cd", "labs", "&&", "terraform", "apply", "-auto-approve"]
-    subprocess.run(
-        cmd,
-        shell=False,
-        check=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
-    )
+    run_cmd(cmd)
 
 
 if __name__ == "__main__":
