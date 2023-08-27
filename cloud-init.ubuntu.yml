@@ -6,8 +6,6 @@ users:
     ssh_import_id: None
     lock_passwd: true
     sudo: ALL=(ALL) NOPASSWD:ALL
-    # ssh_authorized_keys:
-    #   - ssh-rsa AAAAB3NzaC1yc2E
 
   - name: ansible
     shell: /bin/bash
@@ -16,18 +14,23 @@ users:
     lock_passwd: true
     sudo: ALL=(ALL) NOPASSWD:ALL
 
-ansible:
-  package_name: ansible-core
-  install_method: distro
-  pull:
-    url: https://github.com/pythoninthegrass/apt_lab_tf.git
-    playbook_name: playbook.yml
-  run_ansible:
-    playbook_dir: master/modules/linux/
-    playbook_name: playbook.yml
-    tags: qa
+packages:
+  - ansible
+  - ansible-lint
+  - ca-certificates
+  - cloud-init
+  - git
+  - inxi
+  - p7zip-full
+  - tree
+  - vim
+  - wget
+package_update: true
+package_upgrade: true
 
 runcmd:
   - curl -s https://github.com/pythoninthegrass.keys >> /home/ubuntu/.ssh/authorized_keys
-  # - /bin/bash bootstrap.sh
+  - git clone https://github.com/pythoninthegrass/apt_lab_tf.git /home/ubuntu/git/apt_lab_tf
+  - chown -R ubuntu:ubuntu /home/ubuntu/git/apt_lab_tf
+  - touch /var/log/ansible.log && chown ubuntu:ubuntu /var/log/ansible.log
 
