@@ -3,7 +3,7 @@ script = <<EOF
 Invoke-Expression "$env:windir\system32\cscript.exe $env:windir\system32\slmgr.vbs /skms kms.core.windows.net:1688"
 Invoke-Expression "$env:windir\system32\cscript.exe $env:windir\system32\slmgr.vbs /ato"
 $password = ConvertTo-SecureString "APTClass!" -AsPlainText -Force
-$Cred = New-Object System.Management.Automation.PSCredential ("LABS\itadmin", $password)
+$Cred = New-Object System.Management.Automation.PSCredential ("labs\itadmin", $password)
 $LocalTempDir = $env:TEMP; $ChromeInstaller = "ChromeSetup.exe"; (new-object    System.Net.WebClient).DownloadFile('https://dl.google.com/tag/s/appguid%3D%7B8A69D345-D564-463C-AFF1-A69D9E530F96%7D%26iid%3D%7B63FEF3AA-F182-26E9-2FB9-BD1031843FE2%7D%26lang%3Den%26browser%3D4%26usagestats%3D0%26appname%3DGoogle%2520Chrome%26needsadmin%3Dprefers%26ap%3Dx64-stable-statsdef_1%26installdataindex%3Dempty/update2/installers/ChromeSetup.exe', "$LocalTempDir\$ChromeInstaller"); & "$LocalTempDir\$ChromeInstaller" /silent /install; $Process2Monitor =  "ChromeInstaller"; Do { $ProcessesFound = Get-Process | ?{$Process2Monitor -contains $_.Name} | Select-Object -ExpandProperty Name; If ($ProcessesFound) { "Still running: $($ProcessesFound -join ', ')" | Write-Host; Start-Sleep -Seconds 2 } else { rm "$LocalTempDir\$ChromeInstaller" -ErrorAction SilentlyContinue -Verbose } } Until (!$ProcessesFound)
 Invoke-WebRequest -Uri "https://the.earth.li/~sgtatham/putty/latest/w64/putty.exe" -OutFile "C:\Users\Public\Desktop\Putty.exe"
 function Disable-ieESC {
@@ -24,10 +24,10 @@ Get-Service -DisplayName "SSDP Discovery" | Start-Service
 Get-Service -DisplayName "UPnP Device Host" | Start-Service
 Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 (Get-WmiObject -class Win32_TSGeneralSetting -Namespace root\cimv2\terminalservices -ComputerName localhost -Filter "TerminalName='RDP-tcp'").SetUserAuthenticationRequired(0)
-$RDPUsers ="Net localgroup “Remote Desktop Users” /add “LABS\Domain Users"
+$RDPUsers ="Net localgroup “Remote Desktop Users” /add “labs\Domain Users"
 Invoke-command -computername localhost -scriptblock {$RDPUsers} -Credential $Cred
-C:/LABS/scripts/ad-users-create-script.ps1 ${var.admin_password} ${var.admin_username}
-C:/LABS/scripts/shareLabs.ps1
+C:/labs/scripts/ad-users-create-script.ps1 ${var.admin_password} ${var.admin_username}
+C:/labs/scripts/shareLabs.ps1
 Remove-WindowsFeature Windows-Defender, Windows-Defender-GUI
 ping 1.1.1.1
 Set-DnsServerForwarder -IPAddress 1.1.1.1

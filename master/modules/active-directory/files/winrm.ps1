@@ -17,10 +17,10 @@ winrm set winrm/config/service/Auth $WinRmBasic
 Write-Host "Open Firewall Port"
 netsh advfirewall firewall add rule name="Windows Remote Management (HTTPS-In)" dir=in action=allow protocol=TCP localport=5985
 
-New-Item -Path "c:\" -Name "LABS" -ItemType "directory"
+New-Item -Path "c:\" -Name "labs" -ItemType "directory"
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-wget "https://github.com/DefensiveOrigins/APT-Lab-Terraform/raw/master/labs.zip" -outfile "C:\LABS\labs.zip"
+wget "https://github.com/DefensiveOrigins/APT-Lab-Terraform/raw/master/labs.zip" -outfile "C:\labs\labs.zip"
 
-expand-archive -path "c:\LABS\labs.zip" -destinationpath "C:\LABS"
+expand-archive -path "c:\labs\labs.zip" -destinationpath "C:\labs"
 
