@@ -20,7 +20,7 @@ RESET  := $(shell tput -Txterm sgr0)
 
 # targets
 .PHONY: all
-all: multi-launch
+all: list launch info shell stop start delete purge ansible
 
 ifneq ($(shell command -v multipass >/dev/null 2>&1; echo $$?), 0)
 	$(error "multipass is not installed")
@@ -63,17 +63,16 @@ purge: ## purge all instances
 	@echo "${YELLOW}Purging all instances${RESET}"
 	multipass purge
 
+# TODO: complete `multipass exec` command
 ansible: start ## run ansible playbook
 	@echo "${YELLOW}Running ansible playbook${RESET}"
 	#!/usr/bin/env bash
 	# set -euxo pipefail
-	multipass exec "${NAME}" -- \
+	# multipass exec "${NAME}"
 
-pre-commit:
-    @echo "To install pre-commit hooks:"
-    @echo "pre-commit install -f"
-    @echo "Updating pre-commit hooks..."
-    pre-commit autoupdate
+precommit: ## update pre-commit hooks
+	@echo "${YELLOW}Updating pre-commit hooks${RESET}"
+	pre-commit autoupdate
 
 help: ## show this help
 	@echo ''
