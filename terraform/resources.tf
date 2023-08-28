@@ -1,3 +1,11 @@
+
+locals {
+  resource_group_name   = "class-resources"
+  master_admin_username = "itadmin"
+  master_admin_password = "APTClass!"
+  master_domain         = "labs.local"
+}
+
 resource "azurerm_resource_group" "stu" {
   name     = local.resource_group_name
   location = "regionalregion"
