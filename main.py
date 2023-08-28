@@ -60,8 +60,8 @@ def read_master_tf(master_file):
 
 
 def build_main(mgmt_ip):
-    static_info = Path("static.tf").read_text()
-    build_info = Path("build.tf").read_text()
+    static_info = Path("./terraform/providers.tf").read_text()
+    build_info = Path("./terraform/resources.tf").read_text()
 
     main_tf = open('./labs/main.tf', 'a+')
     static_info = static_info.replace('subid', subscription_id)
@@ -126,6 +126,7 @@ def main():
     copy(master_dir, class_dir)
     build_main(mgmt_ip)
 
+    # TODO: test locally first
     # terraform init
     cmd = ["cd", "labs", "&&", "terraform", "init"]
     run_cmd(cmd)
