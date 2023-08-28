@@ -1,3 +1,5 @@
+# TODO: fix error on cycle
+# ! "Error: Cycle: module.stu-linux.null_resource.ansible_provisioner, module.stu-linux.azurerm_virtual_machine.vm"
 resource "null_resource" "ansible_provisioner" {
   provisioner "local-exec" {
     command = "ansible-playbook -i '${azurerm_public_ip.vm.ip_address},' playbook.yml"
@@ -41,7 +43,7 @@ resource "azurerm_virtual_machine" "vm" {
   storage_image_reference {
     publisher = "Canonical"
     offer     = "UbuntuServer"
-    sku       = "20.04-LTS"
+    sku       = "22.04-LTS"
     version   = "latest"
   }
 
